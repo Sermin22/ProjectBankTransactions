@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 from datetime import datetime, time
+from dotenv import load_dotenv
+import requests
 
 
 def greet_by_time(datetime_str: str) -> str:
@@ -97,8 +99,82 @@ def top_transactions_by_amount(file_path: str, input_date_str: str) -> list[dict
     return result_list
 
 
+def stock_prices() -> list[dict]:
+    '''Происходит обращение к внешнему API для получения текущей стоимости акций из S&P500'''
+
+    # Загрузка переменных окружения из файла .env
+    load_dotenv()
+    API_Key_marketstack = os.getenv('API_Key_marketstack')
+
+    if not API_Key_marketstack:
+        raise ValueError("Ключ API не задан в среде.")
+
+    try:
+        # Формирование URL для запроса к API
+        url = f"https://api.marketstack.com/v2/eod?access_key={API_Key_marketstack}"
+        # Параметры запроса (символы акций)
+        querystring = {"symbols": "AAPL,AMZN,GOOGL,MSFT,TSLA"}
+        # Отправка GET-запроса
+        response = requests.get(url, params=querystring)
+        # Проверяем успешность запроса
+        if response.status_code != 200:
+            raise Exception(f"Запрос не выполнен с кодом состояния: {response.status_code}")
+        # Преобразование ответа в JSON
+        data = response.json()
+        # Извлекаем нужные данные
+        list_dict_data = []
+        for item in data['data']:
+            list_dict_data.append({
+                'symbol': item['symbol'],
+                'close': item['close']
+            })
+        result = list_dict_data[0:5]
+        return result
+
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+        return []
+
+
+def recent_currency_rates() -> list[dict]:
+    '''Происходит обращение к внешнему API для получения текущекурса USD и EUR'''
+
+    # Загрузка переменных окружения из файла .env
+    load_dotenv()
+    APIlayer_KEY = os.getenv('APIlayer_KEY')
+
+    if not APIlayer_KEY:
+        raise ValueError("Ключ API не задан в среде.")
+
+    headers = {
+        "apikey": APIlayer_KEY
+    }
+    try:
+        # Формирование URL для запроса к API
+        url = f"https://api.apilayer.com/exchangerates_data/latest?symbols={"USD,EUR"}"
+        response = requests.get(url, headers=headers)
+        # Проверяем успешность запроса
+        if response.status_code != 200:
+            raise Exception(f"Запрос не выполнен с кодом состояния: {response.status_code}")
+
+        rates = response.json()['rates']
+        # Создаём пустой список для хранения результатов
+        result = []
+        # Извлекаем данные курсов валют
+        for currency, rate in rates.items():
+            result.append({
+                'currency': currency,
+                'rate': rate
+            })
+        return result
+
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+        return []
+
+
 if __name__ == '__main__':
-    PATH_TO_FILE_XLSX = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "operations.xlsx")
+    # PATH_TO_FILE_XLSX = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "operations.xlsx")
 
     # print(greet_by_time('2023-10-01 07:15:00'))  # Доброе утро
     # print(greet_by_time('2023-10-01 13:30:00'))  # Добрый день
@@ -112,3 +188,6 @@ if __name__ == '__main__':
     # input_date_str = '2021-12-31 16:44:00'  # YYYY-MM-DD HH:MM:SS
     # result = top_transactions_by_amount(PATH_TO_FILE_XLSX, input_date_str)
     # print(result)
+
+    # print(stock_prices())
+    print(recent_currency_rates())
