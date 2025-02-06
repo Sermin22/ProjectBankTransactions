@@ -1,9 +1,43 @@
 import os
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, time
 
 
-def process_xlsx_file_with_date_filter(file_path, input_date_str):
+def greet_by_time(datetime_str: str) -> str:
+    '''Функция принимает на вход строку с датой и временем в формате YYYY-MM-DD HH:MM:SS
+    и в зависимости от времени дня выводит приветствие'''
+
+    # Преобразуем строку в объект datetime
+    dt = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
+
+    # Определяем начало и конец каждого временного интервала
+    morning_start = time(6, 0, 0)
+    day_start = time(12, 0, 0)
+    evening_start = time(18, 0, 0)
+    night_start = time(0, 0, 0)
+    time_max = time(23, 59, 59)  # можно в условии заменить на time.max
+
+    # Получаем текущее время
+    current_time = dt.time()
+    # Сравнения с временными интервалами
+    greeting = ''
+    if morning_start <= current_time < day_start:
+        greeting = 'Доброе утро'
+    elif day_start <= current_time < evening_start:
+        greeting = 'Добрый день'
+    elif evening_start <= current_time < time_max:
+        greeting = 'Добрый вечер'
+    elif night_start <= current_time < morning_start:
+        greeting = 'Доброй ночи'
+    # можно еще эти строки, вместо двух последних elif:
+    # elif evening_start <= current_time < time.max:
+    #     greeting = 'Добрый вечер'
+    # else:
+    #     greeting = 'Доброй ночи'
+    return greeting
+
+
+def process_xlsx_file_with_date_filter(file_path: str, input_date_str: str) -> list[dict]:
     '''Принимает на вход файла xlsx, преобразует в DataFrame, отфильтровывает по дате операций - конечная дата
     это дата принимается функцией в качестве аргумента в виде строки, а начальная дата - это первый день месяца
     конечной даты. Группиррует по номеру карты и агрегирует суммы платежей и кэшбека c получением абсолютного
@@ -33,7 +67,7 @@ def process_xlsx_file_with_date_filter(file_path, input_date_str):
     return list_dict
 
 
-def top_transactions_by_amount(file_path, input_date_str):
+def top_transactions_by_amount(file_path: str, input_date_str: str) -> list[dict]:
     '''Принимает на вход файла xlsx, преобразует в DataFrame, отфильтровывает по дате операций - конечная дата
     это дата принимается функцией в качестве аргумента в виде строки, а начальная дата - это первый день месяца
     конечной даты. Возвращает список со словарями топ-5 транзакций по сумме платежа'''
@@ -66,9 +100,14 @@ def top_transactions_by_amount(file_path, input_date_str):
 if __name__ == '__main__':
     PATH_TO_FILE_XLSX = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "operations.xlsx")
 
-    input_date_str = '2021-12-31 16:44:00' # YYYY-MM-DD HH:MM:SS
-    result = process_xlsx_file_with_date_filter(PATH_TO_FILE_XLSX, input_date_str)
-    print(result)
+    # print(greet_by_time('2023-10-01 07:15:00'))  # Доброе утро
+    # print(greet_by_time('2023-10-01 13:30:00'))  # Добрый день
+    # print(greet_by_time('2023-10-01 19:45:00'))  # Добрый вечер
+    # print(greet_by_time('2023-10-01 02:20:00'))  # Доброй ночи
+    #
+    # input_date_str = '2021-12-31 16:44:00' # YYYY-MM-DD HH:MM:SS
+    # result = process_xlsx_file_with_date_filter(PATH_TO_FILE_XLSX, input_date_str)
+    # print(result)
 
     # input_date_str = '2021-12-31 16:44:00'  # YYYY-MM-DD HH:MM:SS
     # result = top_transactions_by_amount(PATH_TO_FILE_XLSX, input_date_str)
