@@ -4,7 +4,11 @@ from src.utils import greet_by_time, process_xlsx_file_with_date_filter, top_tra
     recent_currency_rates, stock_prices_func
 
 
-def main_page(datetime_str):
+def main_page(datetime_str: str) -> str:
+    '''Главная функция, принимающую на вход строку с датой и временем в формате YYYY-MM-DD HH:MM:SS
+    и возвращающую JSON-ответ со следующими данными: приветствие в зависимости от времени суток, по каждой карте:
+    последние 4 цифры карты, общую сумма расходов, кешбэк, топ-5 транзакций по сумме платежа, курс валют и
+    стоимость акций из S&P500'''
 
     PATH_TO_FILE_XLSX = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "operations.xlsx")
 
@@ -29,7 +33,7 @@ def main_page(datetime_str):
     }
     # Запись данных в файл
     with open(file_json_path, "w") as file:
-        json.dump(user_settings, file, indent=4)
+        json.dump(user_settings, file, default=str, ensure_ascii=False, indent=4)
 
     # Объединяем все данные в один словарь
     data = {
@@ -40,12 +44,12 @@ def main_page(datetime_str):
         "stock_prices": stock_prices
     }
     # Преобразуем словарь в строку JSON
-    json_response = json.dumps(data, ensure_ascii=False)
+    json_response = json.dumps(data, indent=4, default=str, ensure_ascii=False)
     return json_response
 
 
-if __name__ == '__main__':
-    print(main_page('2021-12-31 16:44:00'))  # YYYY-MM-DD HH:MM:SS
+# if __name__ == '__main__':
+#     print(main_page('2021-12-31 16:44:00'))  # YYYY-MM-DD HH:MM:SS
 
 # result = '''
 # {"greeting": "Добрый день",
