@@ -22,7 +22,7 @@ def write_to_json(file_name="reports.json"):
             result = func(*args, **kwargs)
 
             with open(file_name, "w", encoding="utf-8") as file:
-                json.dump(result, file, default=str, ensure_ascii=False, indent=4)
+                json.dump(result, file, indent=4, default=str, ensure_ascii=False)
 
             return result
 
@@ -63,10 +63,11 @@ def expenses_by_category(df_operations, category, date_str=None):
         # Преобразуем датафрейм в список словарей
         logger.info('Фильтрации транзакций за последние 90 дней произведена')
         result_list = df_filtered.to_dict('records')
+        return result_list
         # Преобразуем результат в JSON
-        json_result = json.dumps(result_list, indent=4, default=str, ensure_ascii=False)
-        logger.info('Транзакции за последние 90 дней получены')
-        return json_result
+        # json_result = json.dumps(result_list, indent=4, default=str, ensure_ascii=False)
+        # logger.info('Транзакции за последние 90 дней получены')
+        # return json_result
 
     except Exception as e:
         print(f"Произошла ошибка: {e}")
@@ -76,7 +77,7 @@ def expenses_by_category(df_operations, category, date_str=None):
 
 if __name__ == '__main__':
     PATH_TO_FILE_XLSX = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "operations.xlsx")
-#     df = pd.read_excel(PATH_TO_FILE_XLSX)
-#     print(expenses_by_category(df, 'Супермаркеты', '2021-12-31 07:15:00'))
-#     print(expenses_by_category(df, 'Каршеринг', '2021-11-01 13:30:00'))
-#     print(expenses_by_category(df, 'Канцтовары'))
+    # df = pd.read_excel(PATH_TO_FILE_XLSX)
+    # print(expenses_by_category(df, 'Супермаркеты', '2021-12-31 07:15:00'))
+    # print(expenses_by_category(df, 'Каршеринг', '2021-11-01 13:30:00'))
+    # print(expenses_by_category(df, 'Канцтовары'))
