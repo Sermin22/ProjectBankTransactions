@@ -46,4 +46,4 @@ def search_string_in_operations(path_to_excel_file: str, search: str) -> str:
 
 if __name__ == '__main__':
     PATH_TO_FILE_XLSX = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "operations.xlsx")
-#     print(search_string_in_operations(PATH_TO_FILE_XLSX, "Zhenskiy Trikotazh"))
+    print(search_string_in_operations(PATH_TO_FILE_XLSX, "Zhenskiy Trikotazh"))
