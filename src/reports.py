@@ -1,8 +1,8 @@
+# import os
 import pandas as pd
 import datetime
 import json
 import logging
-import os
 from functools import wraps
 
 logger = logging.getLogger(__name__)
@@ -46,8 +46,8 @@ def expenses_by_category(df_operations, category, date_str=None):
         if date_str is not None:
             try:
                 date = datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-            except ValueError:
-                raise ValueError("Неверный формат даты. Ожидается формат YYYY-MM-DD HH:MM:SS")
+            except ValueError as e:
+                raise ValueError("Неверный формат даты. Ожидается формат YYYY-MM-DD HH:MM:SS") from e
         else:
             date = datetime.datetime.now()
 
@@ -72,12 +72,12 @@ def expenses_by_category(df_operations, category, date_str=None):
     except Exception as e:
         print(f"Произошла ошибка: {e}")
         logger.error('Произошла ошибка')
-        return ""
+        raise
 
 
-if __name__ == '__main__':
-    PATH_TO_FILE_XLSX = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "operations.xlsx")
-    # df = pd.read_excel(PATH_TO_FILE_XLSX)
-    # print(expenses_by_category(df, 'Супермаркеты', '2021-12-31 07:15:00'))
-    # print(expenses_by_category(df, 'Каршеринг', '2021-11-01 13:30:00'))
-    # print(expenses_by_category(df, 'Канцтовары'))
+# if __name__ == '__main__':
+#     PATH_TO_FILE_XLSX = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "operations.xlsx")
+#     df = pd.read_excel(PATH_TO_FILE_XLSX)
+#     print(expenses_by_category(df, 'Супермаркеты', '2021-12-31 07:15:00'))
+#     print(expenses_by_category(df, 'Каршеринг', '2021-11-01 13:30:00'))
+#     print(expenses_by_category(df, 'Канцтовары', '2023-04-05T18:00:00'))
